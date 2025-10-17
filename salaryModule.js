@@ -1,6 +1,14 @@
 // salaryModule.js
 import * as EmployeeDb from './employeeDbModule.js';
 
+// Format number to VND currency
+function formatVND(amount) {
+    return new Intl.NumberFormat('vi-VN', { 
+        style: 'currency', 
+        currency: 'VND' 
+    }).format(amount);
+}
+
 export function calculateNetSalary(employee) {
     return employee.salary + employee.bonus - employee.deduction;
 }
@@ -27,17 +35,17 @@ export function render(content) {
     content.innerHTML = `
         <h2>Quản lý Lương</h2>
         <table>
-            <thead><tr><th>ID</th><th>Tên</th><th>Lương cơ bản</th><th>Bonus</th><th>Deduction</th><th>Lương ròng</th><th>Cập nhật Bonus</th><th>Cập nhật Deduction</th></tr></thead>
+            <thead><tr><th>ID</th><th>Tên</th><th>Lương cơ bản</th><th>Thưởng</th><th>Khấu trừ</th><th>Lương ròng</th><th>Cập nhật Thưởng</th><th>Cập nhật Khấu trừ</th></tr></thead>
             <tbody>${report.map(emp => `
                 <tr>
                     <td>${emp.id}</td>
                     <td>${emp.name}</td>
-                    <td>${emp.salary}</td>
-                    <td>${emp.bonus}</td>
-                    <td>${emp.deduction}</td>
-                    <td>${emp.netSalary}</td>
-                    <td><input type="number" data-id="${emp.id}" class="bonus-input" placeholder="Bonus mới"></td>
-                    <td><input type="number" data-id="${emp.id}" class="deduct-input" placeholder="Deduction mới"></td>
+                    <td>${formatVND(emp.salary)}</td>
+                    <td>${formatVND(emp.bonus)}</td>
+                    <td>${formatVND(emp.deduction)}</td>
+                    <td><strong>${formatVND(emp.netSalary)}</strong></td>
+                    <td><input type="number" data-id="${emp.id}" class="bonus-input" placeholder="Nhập số tiền"></td>
+                    <td><input type="number" data-id="${emp.id}" class="deduct-input" placeholder="Nhập số tiền"></td>
                 </tr>`).join('')}
             </tbody>
         </table>
