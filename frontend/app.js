@@ -6,6 +6,12 @@
 import { AuthController } from "./controllers/AuthController.js";
 import { DashboardController } from "./controllers/DashboardController.js";
 import { EmployeeController } from "./controllers/EmployeeController.js";
+import { DepartmentController } from "./controllers/DepartmentController.js";
+import { PositionController } from "./controllers/PositionController.js";
+import { SalaryController } from "./controllers/SalaryController.js";
+import { AttendanceController } from "./controllers/AttendanceController.js";
+import { LeaveController } from "./controllers/LeaveController.js";
+import { PerformanceController } from "./controllers/PerformanceController.js";
 import Router from "./core/Router.js";
 import AuthModel from "./models/AuthModel.js";
 
@@ -79,14 +85,12 @@ class App {
   registerRoutes() {
     this.router.register("dashboard", DashboardController);
     this.router.register("employeeManagement", EmployeeController);
-
-    // TODO: Register other routes when controllers are ready
-    // this.router.register('department', DepartmentController);
-    // this.router.register('position', PositionController);
-    // this.router.register('salary', SalaryController);
-    // this.router.register('attendance', AttendanceController);
-    // this.router.register('leave', LeaveController);
-    // this.router.register('performance', PerformanceController);
+    this.router.register("department", DepartmentController);
+    this.router.register("position", PositionController);
+    this.router.register("salary", SalaryController);
+    this.router.register("attendance", AttendanceController);
+    this.router.register("leave", LeaveController);
+    this.router.register("performance", PerformanceController);
   }
 
   /**
