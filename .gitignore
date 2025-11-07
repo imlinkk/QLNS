@@ -1,0 +1,71 @@
+# Development files
+*.log
+*.tmp
+*.bak
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Composer
+vendor/
+composer.lock
+
+# NPM
+node_modules/
+package-lock.json
+
+# Test files
+/tests/
+test_*.php
+debug_*.php
+
+# Documentation (keep in repo but don't deploy)
+# /docs/
+# README.md is kept for GitHub
+
+# Database backup files
+*.sql.backup
+*.sql.gz
+backup/
+
+# Sensitive files
+FTP.md
+credentials.txt
+passwords.txt
+
+# Deployment artifacts
+deploy/
+dist/
+
+# Logs
+error.log
+access.log
+php_errors.log
+
+# Cache
+cache/
+*.cache
+
+# Temporary uploads
+uploads/tmp/
+temp/
+
+# Database config (commented out - we need this file)
+# backend/config/Database.php
+
+# Keep but ignore user-specific changes
+# You may want to use git update-index --skip-worktree backend/config/Database.php

@@ -13,6 +13,18 @@ This project showcases **professional-grade web development** skills combining:
 - **Database**: MySQL 5.7+ with normalized schema design (3NF)
 - **Architecture**: RESTful API with session-based authentication
 - **UI/UX**: Modern gradient design, responsive layout, interactive components
+- **CI/CD**: Automated deployment with GitHub Actions to production FTP server
+
+---
+
+## 🌐 Live Demo
+
+**Production**: [https://hrm.imlink.id.vn](https://hrm.imlink.id.vn)
+
+**Credentials**:
+
+- Username: `admin`
+- Password: `admin123`
 
 ---
 
@@ -760,7 +772,48 @@ Potential improvements for production deployment:
 - [ ] **Real-time Updates**: WebSocket for live notifications
 - [ ] **API Rate Limiting**: Prevent abuse
 - [ ] **Unit Tests**: PHPUnit for backend, Jest for frontend
-- [ ] **CI/CD Pipeline**: Automated testing and deployment
+- [x] **CI/CD Pipeline**: ✅ Automated deployment with GitHub Actions
+
+---
+
+## 🚀 CI/CD & Deployment
+
+### Automated Deployment
+
+This project uses **GitHub Actions** for continuous deployment to production.
+
+**Every push to `main` or `fixByAlex` branch automatically deploys to**: https://hrm.imlink.id.vn
+
+### Quick Setup:
+
+1. **Add GitHub Secrets** (one-time setup):
+
+   - Go to: Repository → Settings → Secrets and variables → Actions
+   - Add these secrets:
+     - `FTP_SERVER`: Your FTP host
+     - `FTP_USERNAME`: Your FTP username
+     - `FTP_PASSWORD`: Your FTP password
+
+2. **Push to deploy**:
+
+   ```bash
+   git add .
+   git commit -m "Deploy to production"
+   git push origin fixByAlex
+   ```
+
+3. **Watch deployment**: https://github.com/imlinkk/QLNS/actions
+
+### Deployment Features:
+
+✅ **Automatic PHP validation** before deployment  
+✅ **Security hardening** (HTTPS redirect, file protection)  
+✅ **Development file exclusion** (tests, docs removed)  
+✅ **Production .htaccess** configuration  
+✅ **Deployment notifications** on success/failure
+
+📖 **Full deployment guide**: See `DEPLOYMENT.md` for detailed instructions  
+🔐 **Setup guide**: See `GITHUB_SECRETS.md` for GitHub secrets configuration
 
 ---
 

@@ -1,0 +1,163 @@
+name: 🚀 Deploy to Production FTP
+
+on:
+  push:
+    branches:
+      - main
+      - fixByAlex # Deploy when pushing to fixByAlex branch
+  workflow_dispatch: # Allow manual trigger from GitHub Actions tab
+
+jobs:
+  deploy:
+    name: 🌐 Deploy to hrm.imlink.id.vn
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full git history for better deployment
+
+      - name: 🔧 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "7.4"
+          extensions: pdo, pdo_mysql, mbstring
+          coverage: none
+
+      - name: ✅ Validate PHP Syntax
+        run: |
+          echo "🔍 Checking PHP files for syntax errors..."
+          find backend -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"
+          echo "✅ All PHP files are valid!"
+
+      - name: 📋 Prepare Deployment Files
+        run: |
+          echo "📦 Preparing files for deployment..."
+
+          # Create deployment directory
+          mkdir -p deploy
+
+          # Copy all necessary files
+          cp -r backend deploy/
+          cp -r frontend deploy/
+          cp -r assets deploy/
+          cp index.html deploy/
+          cp .htaccess deploy/
+
+          # Create production .htaccess if needed
+          echo "🔧 Configuring .htaccess for production..."
+          cat > deploy/.htaccess << 'EOF'
+          RewriteEngine On
+
+          # Redirect HTTP to HTTPS (Production)
+          RewriteCond %{HTTPS} off
+          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+          # Handle frontend routing
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteCond %{REQUEST_URI} !^/backend/
+          RewriteRule ^(.*)$ index.html [L,QSA]
+
+          # Handle backend API requests
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule ^backend/api\.php/(.*)$ backend/api.php [L,QSA]
+
+          # Security: Prevent directory browsing
+          Options -Indexes
+
+          # Protect sensitive files
+          <FilesMatch "\.(sql|md|json|lock|log|ini)$">
+              Order allow,deny
+              Deny from all
+          </FilesMatch>
+          EOF
+
+          # Remove development files
+          echo "🧹 Removing development files..."
+          rm -rf deploy/tests
+          rm -rf deploy/docs
+          rm -rf deploy/.git
+          rm -rf deploy/.github
+          rm -f deploy/FTP.md
+          rm -f deploy/README.md
+          rm -f deploy/index.php  # Remove test file
+
+          echo "✅ Files prepared for deployment!"
+
+      - name: 📊 Display Deployment Info
+        run: |
+          echo "================================================"
+          echo "🚀 DEPLOYMENT INFORMATION"
+          echo "================================================"
+          echo "📅 Date: $(date)"
+          echo "🌿 Branch: ${{ github.ref_name }}"
+          echo "💾 Commit: ${{ github.sha }}"
+          echo "👤 Author: ${{ github.actor }}"
+          echo "📝 Message: ${{ github.event.head_commit.message }}"
+          echo "🌐 Target: hrm.imlink.id.vn"
+          echo "📂 Files to deploy:"
+          du -sh deploy/*
+          echo "================================================"
+
+      - name: 🚀 Deploy to FTP Server
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./deploy/
+          server-dir: /public_html/
+          protocol: ftps
+          port: 21
+          log-level: verbose
+          dangerous-clean-slate: false # Keep existing files, only update/add new ones
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.DS_Store
+            **/tests/**
+            **/docs/**
+            **/*.md
+            **/composer.json
+            **/composer.lock
+            **/package.json
+            **/package-lock.json
+            **/.env.example
+
+      - name: 🎉 Deployment Complete
+        run: |
+          echo "================================================"
+          echo "✅ DEPLOYMENT SUCCESSFUL!"
+          echo "================================================"
+          echo "🌐 Your application is now live at:"
+          echo "   https://hrm.imlink.id.vn"
+          echo ""
+          echo "📋 Next steps:"
+          echo "   1. Visit https://hrm.imlink.id.vn to verify"
+          echo "   2. Test login with: admin / admin123"
+          echo "   3. Check all modules are working"
+          echo "   4. Verify database connection"
+          echo ""
+          echo "⚠️  Remember to:"
+          echo "   - Check database credentials in Database.php"
+          echo "   - Ensure SSL certificate is active"
+          echo "   - Test all CRUD operations"
+          echo "================================================"
+
+      - name: 🔔 Notify on Failure
+        if: failure()
+        run: |
+          echo "================================================"
+          echo "❌ DEPLOYMENT FAILED!"
+          echo "================================================"
+          echo "Please check the logs above for errors."
+          echo "Common issues:"
+          echo "  - FTP credentials incorrect"
+          echo "  - Server connection timeout"
+          echo "  - Insufficient permissions"
+          echo "  - Network issues"
+          echo "================================================"
