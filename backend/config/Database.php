@@ -5,10 +5,16 @@ use PDO;
 use PDOException;
 
 class Database {
+// private const DB_HOST = 'localhost';
+// private const DB_NAME = 'cdmidkxg_imlink_hrm';     // ← TÊN DATABASE
+// private const DB_USER = 'cdmidkxg_imlink_user';   // ← TÊN USER
+// private const DB_PASS = '2612Link@';            // ← MẬT KHẨU BẠN ĐÃ ĐẶT
+// private const DB_CHARSET = 'utf8mb4';
+
 private const DB_HOST = 'localhost';
-private const DB_NAME = 'cdmidkxg_imlink_hrm';     // ← TÊN DATABASE
-private const DB_USER = 'cdmidkxg_imlink_user';   // ← TÊN USER
-private const DB_PASS = '2612Link@';            // ← MẬT KHẨU BẠN ĐÃ ĐẶT
+private const DB_NAME = 'linh_hrm';     // ← TÊN DATABASE
+private const DB_USER = 'root';   // ← TÊN USER
+private const DB_PASS = 'quan2004';            // ← MẬT KHẨU BẠN ĐÃ ĐẶT
 private const DB_CHARSET = 'utf8mb4';
     // PDO instance (singleton pattern)
     private static ?PDO $instance = null;

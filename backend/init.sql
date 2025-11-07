@@ -1,13 +1,11 @@
--- Drop tables if they exist (for clean reinstall)
-DROP TABLE IF EXISTS performance_reviews;
-DROP TABLE IF EXISTS leaves;
-DROP TABLE IF EXISTS attendance;
-DROP TABLE IF EXISTS salaries;
-DROP TABLE IF EXISTS employees;
-DROP TABLE IF EXISTS positions;
-DROP TABLE IF EXISTS departments;
-DROP TABLE IF EXISTS users;
+-- =====================================================
+-- HRM Database Initialization Script
+-- Required: MySQL 5.7+ (MySQL 8.0+ recommended for CHECK constraints)
+-- =====================================================
 
+-- Create database if not exists
+CREATE DATABASE IF NOT EXISTS linh_hrm CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE linh_hrm;
 -- Users table for authentication
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
