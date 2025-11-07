@@ -1,16 +1,17 @@
-# HRM (Human Resource Management) Application
+# 👥 HRmOfLink - Human Resource Management System
 
-A complete **Human Resource Management System** built with **Vanilla JavaScript** for the frontend and **PHP + MySQL** for the backend, following **MVC architecture** and **OOP principles**.
+A **modern, full-stack Human Resource Management Application** built entirely from scratch with **100% Vanilla JavaScript** (no frameworks!) for the frontend and **PHP + MySQL** for the backend, following strict **MVC architecture** and **OOP principles**.
 
 ---
 
 ## 🎯 Project Overview
 
-This project demonstrates advanced web development skills combining:
-- **Frontend**: Pure JavaScript (ES6+), HTML5, CSS3 - No frameworks!
-- **Backend**: PHP 8+ with OOP, MVC pattern, PDO for database operations
-- **Database**: MySQL with normalized schema design
-- **Architecture**: RESTful API design pattern
+This project showcases **professional-grade web development** skills combining:
+- **Frontend**: Pure JavaScript (ES6+ Modules), HTML5, Modern CSS3 - **Zero dependencies!**
+- **Backend**: PHP 7.4+ with OOP, Custom MVC Router, PDO for database operations
+- **Database**: MySQL 5.7+ with normalized schema design (3NF)
+- **Architecture**: RESTful API with session-based authentication
+- **UI/UX**: Modern gradient design, responsive layout, interactive components
 
 ---
 

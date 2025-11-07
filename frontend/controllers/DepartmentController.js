@@ -37,17 +37,94 @@ export class DepartmentController {
           ➕ Thêm Phòng ban
         </button>
       </div>
-      <div class="card">
-        <p>Tổng số phòng ban: <strong>${departments.length}</strong></p>
-        <ul>
-          ${departments
-            .map(
-              (dept) => `
-            <li>${dept.name} - ${dept.description || "Không có mô tả"}</li>
-          `
-            )
-            .join("")}
-        </ul>
+
+      <div class="stats-overview">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            🏢
+          </div>
+          <div class="stat-info">
+            <h3>${departments.length}</h3>
+            <p>Tổng Phòng ban</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            👥
+          </div>
+          <div class="stat-info">
+            <h3>${departments.reduce(
+              (sum, d) => sum + (d.employee_count || 0),
+              0
+            )}</h3>
+            <p>Tổng Nhân viên</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            ✅
+          </div>
+          <div class="stat-info">
+            <h3>${departments.filter((d) => d.status === "active").length}</h3>
+            <p>Đang Hoạt động</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="departments-grid">
+        ${departments
+          .map(
+            (dept) => `
+          <div class="department-card">
+            <div class="dept-card-header">
+              <div class="dept-icon">🏢</div>
+              <div class="dept-title">
+                <h3>${dept.name}</h3>
+                <span class="dept-badge ${
+                  dept.status === "active" ? "badge-success" : "badge-inactive"
+                }">
+                  ${dept.status === "active" ? "✅ Hoạt động" : "⏸️ Ngưng"}
+                </span>
+              </div>
+            </div>
+            <div class="dept-card-body">
+              <p class="dept-description">${
+                dept.description || "Chưa có mô tả"
+              }</p>
+              <div class="dept-stats">
+                <div class="dept-stat-item">
+                  <span class="stat-label">👥 Nhân viên:</span>
+                  <span class="stat-value">${dept.employee_count || 0}</span>
+                </div>
+                <div class="dept-stat-item">
+                  <span class="stat-label">👤 Trưởng phòng:</span>
+                  <span class="stat-value">${
+                    dept.manager_name || "Chưa có"
+                  }</span>
+                </div>
+              </div>
+            </div>
+            <div class="dept-card-footer">
+              <button class="btn-icon" onclick="alert('Xem chi tiết: ${
+                dept.name
+              }')" title="Xem chi tiết">
+                👁️
+              </button>
+              <button class="btn-icon" onclick="alert('Chỉnh sửa: ${
+                dept.name
+              }')" title="Chỉnh sửa">
+                ✏️
+              </button>
+              <button class="btn-icon btn-danger" onclick="if(confirm('Xóa phòng ban ${
+                dept.name
+              }?')) alert('Đã xóa!')" title="Xóa">
+                🗑️
+              </button>
+            </div>
+          </div>
+        `
+          )
+          .join("")}
       </div>
     `;
   }
