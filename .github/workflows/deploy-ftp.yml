@@ -28,7 +28,21 @@ jobs:
       - name: ✅ Validate PHP Syntax
         run: |
           echo "🔍 Checking PHP files for syntax errors..."
-          find backend -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"
+          ERROR_COUNT=0
+          while IFS= read -r -d '' file; do
+            if ! php -l "$file" > /dev/null 2>&1; then
+              echo "❌ Syntax error in: $file"
+              php -l "$file"
+              ERROR_COUNT=$((ERROR_COUNT + 1))
+            else
+              echo "✓ $file"
+            fi
+          done < <(find backend -name "*.php" -print0)
+
+          if [ $ERROR_COUNT -gt 0 ]; then
+            echo "❌ Found $ERROR_COUNT PHP file(s) with syntax errors!"
+            exit 1
+          fi
           echo "✅ All PHP files are valid!"
 
       - name: 📋 Prepare Deployment Files
