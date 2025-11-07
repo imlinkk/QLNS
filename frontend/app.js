@@ -132,8 +132,49 @@ class App {
 
         // Navigate to route
         this.router.navigate(moduleName);
+
+        // Close mobile menu after navigation
+        this.closeMobileMenu();
       });
     });
+
+    // Setup mobile menu toggle
+    this.setupMobileMenu();
+  }
+
+  /**
+   * Setup mobile menu toggle
+   */
+  setupMobileMenu() {
+    const menuToggle = document.getElementById("mobile-menu-toggle");
+    const sidebar = document.getElementById("sidebar");
+
+    if (menuToggle && sidebar) {
+      menuToggle.addEventListener("click", () => {
+        menuToggle.classList.toggle("active");
+        sidebar.classList.toggle("active");
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener("click", (e) => {
+        if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+          this.closeMobileMenu();
+        }
+      });
+    }
+  }
+
+  /**
+   * Close mobile menu
+   */
+  closeMobileMenu() {
+    const menuToggle = document.getElementById("mobile-menu-toggle");
+    const sidebar = document.getElementById("sidebar");
+
+    if (menuToggle && sidebar) {
+      menuToggle.classList.remove("active");
+      sidebar.classList.remove("active");
+    }
   }
 
   /**
