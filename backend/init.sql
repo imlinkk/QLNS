@@ -155,8 +155,8 @@ CREATE TABLE performance_reviews (
 
 -- Insert default admin user (password: admin123)
 INSERT INTO users (username, password, email, full_name, role) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin@hrm.com', 'Administrator', 'admin'),
-('manager1', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'manager@hrm.com', 'John Manager', 'manager');
+('admin', '$2y$12$wMVaVMvT75vpOziALDP2PuCSDMHBpqKllc6QDvtIIM1.Jxr9.5rWu', 'admin@hrm.com', 'Administrator', 'admin'),
+('manager1', '$2y$12$wMVaVMvT75vpOziALDP2PuCSDMHBpqKllc6QDvtIIM1.Jxr9.5rWu', 'manager@hrm.com', 'John Manager', 'manager');
 
 -- Insert sample departments
 INSERT INTO departments (name, description) VALUES

@@ -18,7 +18,6 @@ export class AuthController {
    */
   init(onLoginSuccess) {
     this.onLoginSuccess = onLoginSuccess;
-    this.authModel.init();
     this.view.renderLoginForm();
     this.setupEventListeners();
   }

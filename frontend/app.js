@@ -30,8 +30,10 @@ class App {
     // Register routes
     this.registerRoutes();
 
-    // Check authentication
-    if (AuthModel.isAuthenticated()) {
+    // Check authentication with backend
+    const isAuthenticated = await AuthModel.isAuthenticated();
+
+    if (isAuthenticated) {
       console.log("✅ User authenticated, showing dashboard");
       this.showDashboard();
     } else {
@@ -140,12 +142,12 @@ class App {
   setupLogout() {
     const logoutBtn = document.getElementById("logout");
     if (logoutBtn) {
-      logoutBtn.addEventListener("click", (e) => {
+      logoutBtn.addEventListener("click", async (e) => {
         e.preventDefault();
         console.log("👋 Logging out...");
 
-        // Logout
-        AuthModel.logout();
+        // Logout (call backend to destroy session)
+        await AuthModel.logout();
 
         // Reload page
         window.location.reload();
