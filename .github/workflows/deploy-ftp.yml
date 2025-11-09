@@ -116,7 +116,7 @@ jobs:
           du -sh deploy/*
           echo "================================================"
 
-       - name: 🚀 Deploy to Production FTP
+      - name: 🚀 Deploy to Production FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
