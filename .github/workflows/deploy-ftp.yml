@@ -116,18 +116,16 @@ jobs:
           du -sh deploy/*
           echo "================================================"
 
-      - name: 🚀 Deploy to FTP Server
+       - name: 🚀 Deploy to Production FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./deploy/
-          server-dir: /public_html/
-          protocol: ftps
-          port: 21
-          log-level: verbose
-          dangerous-clean-slate: false # Keep existing files, only update/add new ones
+          protocol: ftp             # ✅ Chuyển sang FTP thường (tắt TLS)
+          port: 21                  # ✅ Cổng FTP mặc định
+          local-dir: ./dist         # 👈 Thư mục bạn muốn upload (sửa nếu cần)
+          server-dir: /public_html/ # 👈 Thư mục đích trên server (sửa nếu khác)
           exclude: |
             **/.git*
             **/.git*/**
