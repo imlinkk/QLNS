@@ -1,4 +1,4 @@
-# 👥 HRmOfLink - Human Resource Management System
+# 👥HRM - Human Resource Management System
 
 A **modern, full-stack Human Resource Management Application** built entirely from scratch with **100% Vanilla JavaScript** (no frameworks!) for the frontend and **PHP + MySQL** for the backend, following strict **MVC architecture** and **OOP principles**.
 
