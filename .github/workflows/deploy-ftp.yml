@@ -124,7 +124,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftp             # ✅ Chuyển sang FTP thường (tắt TLS)
           port: 21                  # ✅ Cổng FTP mặc định
-          local-dir: ./dist/         # 👈 Thư mục bạn muốn upload (sửa nếu cần)
+          local-dir: ./deploy/         # 👈 Thư mục bạn muốn upload (sửa nếu cần)
           server-dir: /public_html/ # 👈 Thư mục đích trên server (sửa nếu khác)
           exclude: |
             **/.git*
