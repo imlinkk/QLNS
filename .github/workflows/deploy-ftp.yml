@@ -1,153 +1,303 @@
-name: 🚀 Deploy to Production FTP
+name: 🚀 Deploy to Production FTPname: 🚀 Deploy to Production FTP
 
-on:
-  push:
-    branches:
-      - main
-      - fixByAlex # Deploy when pushing to fixByAlex branch
-  workflow_dispatch: # Allow manual trigger from GitHub Actions tab
 
-jobs:
-  deploy:
-    name: 🌐 Deploy to hrm.imlink.id.vn
-    runs-on: ubuntu-latest
+
+on:on:
+
+  push:  push:
+
+    branches:    branches:
+
+      - main      - main
+
+      - fixByAlex      - fixByAlex # Deploy when pushing to fixByAlex branch
+
+  workflow_dispatch:  workflow_dispatch: # Allow manual trigger from GitHub Actions tab
+
+
+
+jobs:jobs:
+
+  deploy:  deploy:
+
+    name: 🌐 Deploy to hrm.imlink.id.vn    name: 🌐 Deploy to hrm.imlink.id.vn
+
+    runs-on: ubuntu-latest    runs-on: ubuntu-latest
+
+    timeout-minutes: 15
 
     steps:
-      - name: 📥 Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Full git history for better deployment
+
+    steps:      - name: 📥 Checkout Code
+
+      - name: 📥 Checkout Code        uses: actions/checkout@v4
+
+        uses: actions/checkout@v4        with:
+
+        with:          fetch-depth: 0 # Full git history for better deployment
+
+          fetch-depth: 0
 
       - name: 🔧 Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "7.4"
-          extensions: pdo, pdo_mysql, mbstring
+
+      - name: 🔧 Setup PHP        uses: shivammathur/setup-php@v2
+
+        uses: shivammathur/setup-php@v2        with:
+
+        with:          php-version: "7.4"
+
+          php-version: "7.4"          extensions: pdo, pdo_mysql, mbstring
+
+          extensions: pdo, pdo_mysql, mbstring          coverage: none
+
           coverage: none
 
       - name: ✅ Validate PHP Syntax
-        run: |
-          echo "🔍 Checking PHP files for syntax errors..."
-          ERROR_COUNT=0
-          while IFS= read -r -d '' file; do
-            if ! php -l "$file" > /dev/null 2>&1; then
-              echo "❌ Syntax error in: $file"
-              php -l "$file"
-              ERROR_COUNT=$((ERROR_COUNT + 1))
-            else
-              echo "✓ $file"
-            fi
+
+      - name: ✅ Validate PHP Syntax        run: |
+
+        run: |          echo "🔍 Checking PHP files for syntax errors..."
+
+          echo "🔍 Checking PHP files for syntax errors..."          ERROR_COUNT=0
+
+          ERROR_COUNT=0          while IFS= read -r -d '' file; do
+
+          while IFS= read -r -d '' file; do            if ! php -l "$file" > /dev/null 2>&1; then
+
+            if ! php -l "$file" > /dev/null 2>&1; then              echo "❌ Syntax error in: $file"
+
+              echo "❌ Syntax error in: $file"              php -l "$file"
+
+              php -l "$file"              ERROR_COUNT=$((ERROR_COUNT + 1))
+
+              ERROR_COUNT=$((ERROR_COUNT + 1))            else
+
+            else              echo "✓ $file"
+
+              echo "✓ $file"            fi
+
+            fi          done < <(find backend -name "*.php" -print0)
+
           done < <(find backend -name "*.php" -print0)
 
           if [ $ERROR_COUNT -gt 0 ]; then
-            echo "❌ Found $ERROR_COUNT PHP file(s) with syntax errors!"
-            exit 1
-          fi
+
+          if [ $ERROR_COUNT -gt 0 ]; then            echo "❌ Found $ERROR_COUNT PHP file(s) with syntax errors!"
+
+            echo "❌ Found $ERROR_COUNT PHP file(s) with syntax errors!"            exit 1
+
+            exit 1          fi
+
+          fi          echo "✅ All PHP files are valid!"
+
           echo "✅ All PHP files are valid!"
 
       - name: 📋 Prepare Deployment Files
-        run: |
+
+      - name: 📋 Prepare Deployment Files        run: |
+
+        run: |          echo "📦 Preparing files for deployment..."
+
           echo "📦 Preparing files for deployment..."
 
-          # Create deployment directory
-          mkdir -p deploy
+          mkdir -p deploy          # Create deployment directory
 
-          # Copy all necessary files
-          cp -r backend deploy/
+          cp -r backend deploy/          mkdir -p deploy
+
           cp -r frontend deploy/
-          cp -r assets deploy/
-          cp index.html deploy/
-          cp .htaccess deploy/
 
-          # Create production .htaccess if needed
-          echo "🔧 Configuring .htaccess for production..."
-          cat > deploy/.htaccess << 'EOF'
+          cp -r assets deploy/          # Copy all necessary files
+
+          cp index.html deploy/          cp -r backend deploy/
+
+          cp .htaccess deploy/          cp -r frontend deploy/
+
+          cp -r assets deploy/
+
+          echo "🔧 Configuring .htaccess for production..."          cp index.html deploy/
+
+          cat > deploy/.htaccess << 'EOF'          cp .htaccess deploy/
+
           RewriteEngine On
 
-          # Redirect HTTP to HTTPS (Production)
-          RewriteCond %{HTTPS} off
-          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+          RewriteCond %{HTTPS} off          # Create production .htaccess if needed
 
-          # Handle frontend routing
-          RewriteCond %{REQUEST_FILENAME} !-f
-          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]          echo "🔧 Configuring .htaccess for production..."
+
+          RewriteCond %{REQUEST_FILENAME} !-f          cat > deploy/.htaccess << 'EOF'
+
+          RewriteCond %{REQUEST_FILENAME} !-d          RewriteEngine On
+
           RewriteCond %{REQUEST_URI} !^/backend/
-          RewriteRule ^(.*)$ index.html [L,QSA]
 
-          # Handle backend API requests
-          RewriteCond %{REQUEST_FILENAME} !-f
-          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule ^(.*)$ index.html [L,QSA]          # Redirect HTTP to HTTPS (Production)
+
+          RewriteCond %{REQUEST_FILENAME} !-f          RewriteCond %{HTTPS} off
+
+          RewriteCond %{REQUEST_FILENAME} !-d          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
           RewriteRule ^backend/api\.php/(.*)$ backend/api.php [L,QSA]
 
-          # Security: Prevent directory browsing
-          Options -Indexes
+          Options -Indexes          # Handle frontend routing
 
-          # Protect sensitive files
-          <FilesMatch "\.(sql|md|json|lock|log|ini)$">
-              Order allow,deny
-              Deny from all
-          </FilesMatch>
+          <FilesMatch "\.(sql|md|json|lock|log|ini)$">          RewriteCond %{REQUEST_FILENAME} !-f
+
+              Order allow,deny          RewriteCond %{REQUEST_FILENAME} !-d
+
+              Deny from all          RewriteCond %{REQUEST_URI} !^/backend/
+
+          </FilesMatch>          RewriteRule ^(.*)$ index.html [L,QSA]
+
           EOF
 
-          # Remove development files
-          echo "🧹 Removing development files..."
-          rm -rf deploy/tests
-          rm -rf deploy/docs
-          rm -rf deploy/.git
-          rm -rf deploy/.github
-          rm -f deploy/FTP.md
-          rm -f deploy/README.md
-          rm -f deploy/index.php  # Remove test file
+          # Handle backend API requests
 
-          echo "✅ Files prepared for deployment!"
+          echo "🧹 Removing development files..."          RewriteCond %{REQUEST_FILENAME} !-f
 
-      - name: 📊 Display Deployment Info
+          rm -rf deploy/tests deploy/docs deploy/.git deploy/.github          RewriteCond %{REQUEST_FILENAME} !-d
+
+          rm -f deploy/FTP.md deploy/README.md deploy/index.php          RewriteRule ^backend/api\.php/(.*)$ backend/api.php [L,QSA]
+
+          echo "✅ Files prepared!"
+
+          # Security: Prevent directory browsing
+
+      - name: 📊 Display Deployment Info          Options -Indexes
+
         run: |
-          echo "================================================"
-          echo "🚀 DEPLOYMENT INFORMATION"
-          echo "================================================"
-          echo "📅 Date: $(date)"
-          echo "🌿 Branch: ${{ github.ref_name }}"
-          echo "💾 Commit: ${{ github.sha }}"
+
+          echo "================================================"          # Protect sensitive files
+
+          echo "🚀 DEPLOYMENT INFORMATION"          <FilesMatch "\.(sql|md|json|lock|log|ini)$">
+
+          echo "================================================"              Order allow,deny
+
+          echo "📅 Date: $(date)"              Deny from all
+
+          echo "🌿 Branch: ${{ github.ref_name }}"          </FilesMatch>
+
+          echo "💾 Commit: ${{ github.sha }}"          EOF
+
           echo "👤 Author: ${{ github.actor }}"
-          echo "📝 Message: ${{ github.event.head_commit.message }}"
-          echo "🌐 Target: hrm.imlink.id.vn"
-          echo "📂 Files to deploy:"
-          du -sh deploy/*
-          echo "================================================"
 
-      - name: � Test FTP Connection (Debug)
-        run: |
-          echo "🔍 Testing FTP connection..."
-          echo "Server: ${{ secrets.FTP_SERVER }}"
-          echo "Username length: ${#FTP_USERNAME}"
-          echo "First 5 chars of username: ${FTP_USERNAME:0:5}"
-          
-          # Install lftp for testing
-          sudo apt-get update -qq
-          sudo apt-get install -y lftp
-          
-          # Test FTP connection
-          lftp -e "set ftp:ssl-allow no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}:2222; ls; bye" || echo "❌ FTP connection failed!"
-        env:
-          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          echo "📝 Message: ${{ github.event.head_commit.message }}"          # Remove development files
 
-      - name: �🚀 Deploy to Production FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-        with:
+          echo "🌐 Target: hrm.imlink.id.vn"          echo "🧹 Removing development files..."
+
+          echo "📂 Files to deploy:"          rm -rf deploy/tests
+
+          du -sh deploy/*          rm -rf deploy/docs
+
+          echo "================================================"          rm -rf deploy/.git
+
+          rm -rf deploy/.github
+
+      - name: 🚀 Deploy to Production FTP          rm -f deploy/FTP.md
+
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4          rm -f deploy/README.md
+
+        with:          rm -f deploy/index.php  # Remove test file
+
           server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
+
+          username: ${{ secrets.FTP_USERNAME }}          echo "✅ Files prepared for deployment!"
+
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp             # ✅ FTP thường (123host không cần SSL)
-          port: 2222                # ✅ Port FTP của 123host
-          local-dir: ./deploy/      # Thư mục source để upload
-          server-dir: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/  # ✅ Đường dẫn đầy đủ trên server
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/.DS_Store
-            **/tests/**
+
+          protocol: ftp      - name: 📊 Display Deployment Info
+
+          port: 2222        run: |
+
+          local-dir: ./deploy/          echo "================================================"
+
+          server-dir: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/          echo "🚀 DEPLOYMENT INFORMATION"
+
+          timeout: 600000          echo "================================================"
+
+          exclude: |          echo "📅 Date: $(date)"
+
+            **/.git*          echo "🌿 Branch: ${{ github.ref_name }}"
+
+            **/.git*/**          echo "💾 Commit: ${{ github.sha }}"
+
+            **/node_modules/**          echo "👤 Author: ${{ github.actor }}"
+
+            **/.DS_Store          echo "📝 Message: ${{ github.event.head_commit.message }}"
+
+            **/tests/**          echo "🌐 Target: hrm.imlink.id.vn"
+
+            **/docs/**          echo "📂 Files to deploy:"
+
+            **/*.md          du -sh deploy/*
+
+            **/composer.json          echo "================================================"
+
+            **/composer.lock
+
+            **/package.json      - name: � Test FTP Connection (Debug)
+
+            **/package-lock.json        run: |
+
+            **/.env.example          echo "🔍 Testing FTP connection..."
+
+          echo "Server: ${{ secrets.FTP_SERVER }}"
+
+      - name: 🎉 Deployment Complete          echo "Username length: ${#FTP_USERNAME}"
+
+        run: |          echo "First 5 chars of username: ${FTP_USERNAME:0:5}"
+
+          echo "================================================"          
+
+          echo "✅ DEPLOYMENT SUCCESSFUL!"          # Install lftp for testing
+
+          echo "================================================"          sudo apt-get update -qq
+
+          echo "🌐 Your application is now live at:"          sudo apt-get install -y lftp
+
+          echo "   https://hrm.imlink.id.vn"          
+
+          echo ""          # Test FTP connection
+
+          echo "📋 Next steps:"          lftp -e "set ftp:ssl-allow no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}:2222; ls; bye" || echo "❌ FTP connection failed!"
+
+          echo "   1. Visit https://hrm.imlink.id.vn to verify"        env:
+
+          echo "   2. Test login functionality"          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+
+          echo "   3. Check all modules are working"
+
+          echo "   4. Verify database connection"      - name: �🚀 Deploy to Production FTP
+
+          echo "================================================"        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+
+        with:
+
+      - name: 🔔 Notify on Failure          server: ${{ secrets.FTP_SERVER }}
+
+        if: failure()          username: ${{ secrets.FTP_USERNAME }}
+
+        run: |          password: ${{ secrets.FTP_PASSWORD }}
+
+          echo "================================================"          protocol: ftp             # ✅ FTP thường (123host không cần SSL)
+
+          echo "❌ DEPLOYMENT FAILED!"          port: 2222                # ✅ Port FTP của 123host
+
+          echo "================================================"          local-dir: ./deploy/      # Thư mục source để upload
+
+          echo "Please check the logs above for errors."          server-dir: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/  # ✅ Đường dẫn đầy đủ trên server
+
+          echo "Common issues:"          exclude: |
+
+          echo "  - FTP credentials incorrect"            **/.git*
+
+          echo "  - Server connection timeout"            **/.git*/**
+
+          echo "  - Insufficient permissions"            **/node_modules/**
+
+          echo "  - Network issues"            **/.DS_Store
+
+          echo "================================================"            **/tests/**
+
             **/docs/**
             **/*.md
             **/composer.json
