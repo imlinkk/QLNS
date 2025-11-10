@@ -70,17 +70,17 @@ jobs:
           rm -rf deploy/tests deploy/docs deploy/.git deploy/.github
           echo "Files ready for deployment"
 
-      - name: Deploy via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
-          username: ${{ secrets.SFTP_USERNAME }}
           server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          port: 2222
-          local_path: ./deploy/*
-          remote_path: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/
-          sftp_only: true
-          args: '-o StrictHostKeyChecking=no -v'
+          protocol: ftp
+          port: 21
+          local-dir: ./deploy/
+          server-dir: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/
+          dangerous-clean-slate: false
 
       - name: Deployment Success
         if: success()
