@@ -116,7 +116,23 @@ jobs:
           du -sh deploy/*
           echo "================================================"
 
-      - name: 🚀 Deploy to Production FTP
+      - name: � Test FTP Connection (Debug)
+        run: |
+          echo "🔍 Testing FTP connection..."
+          echo "Server: ${{ secrets.FTP_SERVER }}"
+          echo "Username length: ${#FTP_USERNAME}"
+          echo "First 5 chars of username: ${FTP_USERNAME:0:5}"
+          
+          # Install lftp for testing
+          sudo apt-get update -qq
+          sudo apt-get install -y lftp
+          
+          # Test FTP connection
+          lftp -e "set ftp:ssl-allow no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}:21; ls; bye" || echo "❌ FTP connection failed!"
+        env:
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+
+      - name: �🚀 Deploy to Production FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
