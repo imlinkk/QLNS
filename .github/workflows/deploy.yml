@@ -27,8 +27,19 @@ jobs:
       - name: Validate PHP Syntax
         run: |
           echo "Checking PHP files..."
-          find backend -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"
-          echo "PHP validation complete!"
+          ERROR_COUNT=0
+          for file in $(find backend -name "*.php"); do
+            if ! php -l "$file" > /dev/null 2>&1; then
+              echo "Error in: $file"
+              php -l "$file"
+              ERROR_COUNT=$((ERROR_COUNT + 1))
+            fi
+          done
+          if [ $ERROR_COUNT -gt 0 ]; then
+            echo "Found $ERROR_COUNT PHP syntax errors!"
+            exit 1
+          fi
+          echo "All PHP files are valid!"
 
       - name: Prepare Files
         run: |
