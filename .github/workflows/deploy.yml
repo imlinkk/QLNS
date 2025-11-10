@@ -70,25 +70,17 @@ jobs:
           rm -rf deploy/tests deploy/docs deploy/.git deploy/.github
           echo "Files ready for deployment"
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Deploy via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
+          server: ${{ secrets.FTP_SERVER }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
           port: 2222
-          local-dir: ./deploy/
-          server-dir: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/
-          timeout: 600000
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            **/.DS_Store
-            **/tests/**
-            **/docs/**
-            **/*.md
+          local_path: ./deploy/*
+          remote_path: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/
+          sftp_only: true
+          args: '-o ConnectTimeout=5'
 
       - name: Deployment Success
         if: success()
