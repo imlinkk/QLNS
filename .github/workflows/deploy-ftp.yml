@@ -122,10 +122,10 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp             # ✅ Chuyển sang FTP thường (tắt TLS)
+          protocol: ftp             # ✅ FTP thường
           port: 21                  # ✅ Cổng FTP mặc định
-          local-dir: ./deploy/         # 👈 Thư mục bạn muốn upload (sửa nếu cần)
-          server-dir: /public_html/ # 👈 Thư mục đích trên server (sửa nếu khác)
+          local-dir: ./deploy/      # Thư mục source để upload
+          server-dir: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/  # ✅ Đường dẫn đầy đủ trên server
           exclude: |
             **/.git*
             **/.git*/**
