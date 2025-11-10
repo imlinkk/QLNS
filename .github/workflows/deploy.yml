@@ -1,0 +1,90 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+      - fixByAlex
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to hrm.imlink.id.vn
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: pdo, pdo_mysql, mbstring
+          coverage: none
+
+      - name: Validate PHP Syntax
+        run: |
+          echo "Checking PHP files..."
+          find backend -name "*.php" -exec php -l {} \; | grep -v "No syntax errors"
+          echo "PHP validation complete!"
+
+      - name: Prepare Files
+        run: |
+          mkdir deploy
+          cp -r backend deploy/
+          cp -r frontend deploy/
+          cp -r assets deploy/
+          cp index.html deploy/
+          
+          cat > deploy/.htaccess << 'EOF'
+          RewriteEngine On
+          RewriteCond %{HTTPS} off
+          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteCond %{REQUEST_URI} !^/backend/
+          RewriteRule ^(.*)$ index.html [L,QSA]
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule ^backend/api\.php/(.*)$ backend/api.php [L,QSA]
+          Options -Indexes
+          <FilesMatch "\.(sql|md|json|lock|log|ini)$">
+              Order allow,deny
+              Deny from all
+          </FilesMatch>
+          EOF
+          
+          rm -rf deploy/tests deploy/docs deploy/.git deploy/.github
+          echo "Files ready for deployment"
+
+      - name: Deploy via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 2222
+          local-dir: ./deploy/
+          server-dir: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/
+          timeout: 600000
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.DS_Store
+            **/tests/**
+            **/docs/**
+            **/*.md
+
+      - name: Deployment Success
+        if: success()
+        run: |
+          echo "✅ Deployment successful!"
+          echo "🌐 Site: https://hrm.imlink.id.vn"
+
+      - name: Deployment Failed
+        if: failure()
+        run: echo "❌ Deployment failed! Check logs above."
