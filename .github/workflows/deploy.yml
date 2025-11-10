@@ -73,14 +73,14 @@ jobs:
       - name: Deploy via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          username: ${{ secrets.FTP_USERNAME }}
+          username: ${{ secrets.SFTP_USERNAME }}
           server: ${{ secrets.FTP_SERVER }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 2222
           local_path: ./deploy/*
           remote_path: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/
           sftp_only: true
-          args: '-o ConnectTimeout=5'
+          args: '-o StrictHostKeyChecking=no -v'
 
       - name: Deployment Success
         if: success()
