@@ -128,7 +128,7 @@ jobs:
           sudo apt-get install -y lftp
           
           # Test FTP connection
-          lftp -e "set ftp:ssl-allow no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}:21; ls; bye" || echo "❌ FTP connection failed!"
+          lftp -e "set ftp:ssl-allow no; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} ${{ secrets.FTP_SERVER }}:2222; ls; bye" || echo "❌ FTP connection failed!"
         env:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
 
@@ -138,8 +138,8 @@ jobs:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp             # ✅ FTP thường
-          port: 21                  # ✅ Cổng FTP mặc định
+          protocol: ftp             # ✅ FTP thường (123host không cần SSL)
+          port: 2222                # ✅ Port FTP của 123host
           local-dir: ./deploy/      # Thư mục source để upload
           server-dir: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/  # ✅ Đường dẫn đầy đủ trên server
           exclude: |
