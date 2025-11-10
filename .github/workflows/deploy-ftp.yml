@@ -1,152 +1,302 @@
-name: 🚀 Deploy to Production FTPname: 🚀 Deploy to Production FTP
+name: 🚀 Deploy to Production FTPname: 🚀 Deploy to Production FTPname: 🚀 Deploy to Production FTP
 
 
 
-on:on:
+on:
 
-  push:  push:
+  push:
+
+    branches:on:on:
+
+      - main
+
+      - fixByAlex  push:  push:
+
+  workflow_dispatch:
 
     branches:    branches:
 
-      - main      - main
+jobs:
 
-      - fixByAlex      - fixByAlex # Deploy when pushing to fixByAlex branch
+  deploy:      - main      - main
 
-  workflow_dispatch:  workflow_dispatch: # Allow manual trigger from GitHub Actions tab
+    name: 🌐 Deploy to hrm.imlink.id.vn
 
-
-
-jobs:jobs:
-
-  deploy:  deploy:
-
-    name: 🌐 Deploy to hrm.imlink.id.vn    name: 🌐 Deploy to hrm.imlink.id.vn
-
-    runs-on: ubuntu-latest    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest      - fixByAlex      - fixByAlex # Deploy when pushing to fixByAlex branch
 
     timeout-minutes: 15
 
+  workflow_dispatch:  workflow_dispatch: # Allow manual trigger from GitHub Actions tab
+
     steps:
 
-    steps:      - name: 📥 Checkout Code
+      - name: 📥 Checkout Code
 
-      - name: 📥 Checkout Code        uses: actions/checkout@v4
+        uses: actions/checkout@v4
 
-        uses: actions/checkout@v4        with:
-
-        with:          fetch-depth: 0 # Full git history for better deployment
+        with:jobs:jobs:
 
           fetch-depth: 0
 
+  deploy:  deploy:
+
       - name: 🔧 Setup PHP
 
-      - name: 🔧 Setup PHP        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@v2    name: 🌐 Deploy to hrm.imlink.id.vn    name: 🌐 Deploy to hrm.imlink.id.vn
 
-        uses: shivammathur/setup-php@v2        with:
+        with:
 
-        with:          php-version: "7.4"
+          php-version: "7.4"    runs-on: ubuntu-latest    runs-on: ubuntu-latest
 
-          php-version: "7.4"          extensions: pdo, pdo_mysql, mbstring
+          extensions: pdo, pdo_mysql, mbstring
 
-          extensions: pdo, pdo_mysql, mbstring          coverage: none
+          coverage: none    timeout-minutes: 15
 
-          coverage: none
 
-      - name: ✅ Validate PHP Syntax
 
-      - name: ✅ Validate PHP Syntax        run: |
+      - name: ✅ Validate PHP Syntax    steps:
 
-        run: |          echo "🔍 Checking PHP files for syntax errors..."
+        run: |
 
-          echo "🔍 Checking PHP files for syntax errors..."          ERROR_COUNT=0
+          echo "🔍 Checking PHP files for syntax errors..."    steps:      - name: 📥 Checkout Code
 
-          ERROR_COUNT=0          while IFS= read -r -d '' file; do
+          ERROR_COUNT=0
 
-          while IFS= read -r -d '' file; do            if ! php -l "$file" > /dev/null 2>&1; then
+          while IFS= read -r -d '' file; do      - name: 📥 Checkout Code        uses: actions/checkout@v4
 
-            if ! php -l "$file" > /dev/null 2>&1; then              echo "❌ Syntax error in: $file"
+            if ! php -l "$file" > /dev/null 2>&1; then
 
-              echo "❌ Syntax error in: $file"              php -l "$file"
+              echo "❌ Syntax error in: $file"        uses: actions/checkout@v4        with:
 
-              php -l "$file"              ERROR_COUNT=$((ERROR_COUNT + 1))
+              php -l "$file"
 
-              ERROR_COUNT=$((ERROR_COUNT + 1))            else
+              ERROR_COUNT=$((ERROR_COUNT + 1))        with:          fetch-depth: 0 # Full git history for better deployment
 
-            else              echo "✓ $file"
+            else
 
-              echo "✓ $file"            fi
+              echo "✓ $file"          fetch-depth: 0
 
-            fi          done < <(find backend -name "*.php" -print0)
+            fi
 
-          done < <(find backend -name "*.php" -print0)
+          done < <(find backend -name "*.php" -print0)      - name: 🔧 Setup PHP
 
-          if [ $ERROR_COUNT -gt 0 ]; then
 
-          if [ $ERROR_COUNT -gt 0 ]; then            echo "❌ Found $ERROR_COUNT PHP file(s) with syntax errors!"
 
-            echo "❌ Found $ERROR_COUNT PHP file(s) with syntax errors!"            exit 1
+          if [ $ERROR_COUNT -gt 0 ]; then      - name: 🔧 Setup PHP        uses: shivammathur/setup-php@v2
 
-            exit 1          fi
+            echo "❌ Found $ERROR_COUNT PHP file(s) with syntax errors!"
 
-          fi          echo "✅ All PHP files are valid!"
+            exit 1        uses: shivammathur/setup-php@v2        with:
 
-          echo "✅ All PHP files are valid!"
+          fi
 
-      - name: 📋 Prepare Deployment Files
+          echo "✅ All PHP files are valid!"        with:          php-version: "7.4"
 
-      - name: 📋 Prepare Deployment Files        run: |
 
-        run: |          echo "📦 Preparing files for deployment..."
 
-          echo "📦 Preparing files for deployment..."
+      - name: 📋 Prepare Deployment Files          php-version: "7.4"          extensions: pdo, pdo_mysql, mbstring
 
-          mkdir -p deploy          # Create deployment directory
+        run: |
 
-          cp -r backend deploy/          mkdir -p deploy
+          echo "📦 Preparing files for deployment..."          extensions: pdo, pdo_mysql, mbstring          coverage: none
+
+          mkdir -p deploy
+
+          cp -r backend deploy/          coverage: none
 
           cp -r frontend deploy/
 
-          cp -r assets deploy/          # Copy all necessary files
+          cp -r assets deploy/      - name: ✅ Validate PHP Syntax
 
-          cp index.html deploy/          cp -r backend deploy/
+          cp index.html deploy/
 
-          cp .htaccess deploy/          cp -r frontend deploy/
+          cp .htaccess deploy/      - name: ✅ Validate PHP Syntax        run: |
 
-          cp -r assets deploy/
 
-          echo "🔧 Configuring .htaccess for production..."          cp index.html deploy/
 
-          cat > deploy/.htaccess << 'EOF'          cp .htaccess deploy/
+          echo "🔧 Configuring .htaccess for production..."        run: |          echo "🔍 Checking PHP files for syntax errors..."
 
-          RewriteEngine On
+          cat > deploy/.htaccess << 'EOF'
 
-          RewriteCond %{HTTPS} off          # Create production .htaccess if needed
+          RewriteEngine On          echo "🔍 Checking PHP files for syntax errors..."          ERROR_COUNT=0
 
-          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]          echo "🔧 Configuring .htaccess for production..."
+          RewriteCond %{HTTPS} off
 
-          RewriteCond %{REQUEST_FILENAME} !-f          cat > deploy/.htaccess << 'EOF'
+          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]          ERROR_COUNT=0          while IFS= read -r -d '' file; do
 
-          RewriteCond %{REQUEST_FILENAME} !-d          RewriteEngine On
+          RewriteCond %{REQUEST_FILENAME} !-f
+
+          RewriteCond %{REQUEST_FILENAME} !-d          while IFS= read -r -d '' file; do            if ! php -l "$file" > /dev/null 2>&1; then
 
           RewriteCond %{REQUEST_URI} !^/backend/
 
-          RewriteRule ^(.*)$ index.html [L,QSA]          # Redirect HTTP to HTTPS (Production)
+          RewriteRule ^(.*)$ index.html [L,QSA]            if ! php -l "$file" > /dev/null 2>&1; then              echo "❌ Syntax error in: $file"
 
-          RewriteCond %{REQUEST_FILENAME} !-f          RewriteCond %{HTTPS} off
+          RewriteCond %{REQUEST_FILENAME} !-f
 
-          RewriteCond %{REQUEST_FILENAME} !-d          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+          RewriteCond %{REQUEST_FILENAME} !-d              echo "❌ Syntax error in: $file"              php -l "$file"
 
           RewriteRule ^backend/api\.php/(.*)$ backend/api.php [L,QSA]
 
-          Options -Indexes          # Handle frontend routing
+          Options -Indexes              php -l "$file"              ERROR_COUNT=$((ERROR_COUNT + 1))
 
-          <FilesMatch "\.(sql|md|json|lock|log|ini)$">          RewriteCond %{REQUEST_FILENAME} !-f
+          <FilesMatch "\.(sql|md|json|lock|log|ini)$">
 
-              Order allow,deny          RewriteCond %{REQUEST_FILENAME} !-d
+              Order allow,deny              ERROR_COUNT=$((ERROR_COUNT + 1))            else
 
-              Deny from all          RewriteCond %{REQUEST_URI} !^/backend/
+              Deny from all
 
-          </FilesMatch>          RewriteRule ^(.*)$ index.html [L,QSA]
+          </FilesMatch>            else              echo "✓ $file"
+
+          EOF
+
+              echo "✓ $file"            fi
+
+          echo "🧹 Removing development files..."
+
+          rm -rf deploy/tests deploy/docs deploy/.git deploy/.github            fi          done < <(find backend -name "*.php" -print0)
+
+          rm -f deploy/FTP.md deploy/README.md deploy/index.php
+
+          echo "✅ Files prepared!"          done < <(find backend -name "*.php" -print0)
+
+
+
+      - name: 📊 Display Deployment Info          if [ $ERROR_COUNT -gt 0 ]; then
+
+        run: |
+
+          echo "================================================"          if [ $ERROR_COUNT -gt 0 ]; then            echo "❌ Found $ERROR_COUNT PHP file(s) with syntax errors!"
+
+          echo "🚀 DEPLOYMENT INFORMATION"
+
+          echo "================================================"            echo "❌ Found $ERROR_COUNT PHP file(s) with syntax errors!"            exit 1
+
+          echo "📅 Date: $(date)"
+
+          echo "🌿 Branch: ${{ github.ref_name }}"            exit 1          fi
+
+          echo "💾 Commit: ${{ github.sha }}"
+
+          echo "👤 Author: ${{ github.actor }}"          fi          echo "✅ All PHP files are valid!"
+
+          echo "📝 Message: ${{ github.event.head_commit.message }}"
+
+          echo "🌐 Target: hrm.imlink.id.vn"          echo "✅ All PHP files are valid!"
+
+          echo "📂 Files to deploy:"
+
+          du -sh deploy/*      - name: 📋 Prepare Deployment Files
+
+          echo "================================================"
+
+      - name: 📋 Prepare Deployment Files        run: |
+
+      - name: 🚀 Deploy to Production FTP
+
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4        run: |          echo "📦 Preparing files for deployment..."
+
+        with:
+
+          server: ${{ secrets.FTP_SERVER }}          echo "📦 Preparing files for deployment..."
+
+          username: ${{ secrets.FTP_USERNAME }}
+
+          password: ${{ secrets.FTP_PASSWORD }}          mkdir -p deploy          # Create deployment directory
+
+          protocol: ftp
+
+          port: 2222          cp -r backend deploy/          mkdir -p deploy
+
+          local-dir: ./deploy/
+
+          server-dir: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/          cp -r frontend deploy/
+
+          timeout: 600000
+
+          exclude: |          cp -r assets deploy/          # Copy all necessary files
+
+            **/.git*
+
+            **/.git*/**          cp index.html deploy/          cp -r backend deploy/
+
+            **/node_modules/**
+
+            **/.DS_Store          cp .htaccess deploy/          cp -r frontend deploy/
+
+            **/tests/**
+
+            **/docs/**          cp -r assets deploy/
+
+            **/*.md
+
+            **/composer.json          echo "🔧 Configuring .htaccess for production..."          cp index.html deploy/
+
+            **/composer.lock
+
+            **/package.json          cat > deploy/.htaccess << 'EOF'          cp .htaccess deploy/
+
+            **/package-lock.json
+
+            **/.env.example          RewriteEngine On
+
+
+
+      - name: 🎉 Deployment Complete          RewriteCond %{HTTPS} off          # Create production .htaccess if needed
+
+        run: |
+
+          echo "================================================"          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]          echo "🔧 Configuring .htaccess for production..."
+
+          echo "✅ DEPLOYMENT SUCCESSFUL!"
+
+          echo "================================================"          RewriteCond %{REQUEST_FILENAME} !-f          cat > deploy/.htaccess << 'EOF'
+
+          echo "🌐 Your application is now live at:"
+
+          echo "   https://hrm.imlink.id.vn"          RewriteCond %{REQUEST_FILENAME} !-d          RewriteEngine On
+
+          echo ""
+
+          echo "📋 Next steps:"          RewriteCond %{REQUEST_URI} !^/backend/
+
+          echo "   1. Visit https://hrm.imlink.id.vn to verify"
+
+          echo "   2. Test login functionality"          RewriteRule ^(.*)$ index.html [L,QSA]          # Redirect HTTP to HTTPS (Production)
+
+          echo "   3. Check all modules are working"
+
+          echo "   4. Verify database connection"          RewriteCond %{REQUEST_FILENAME} !-f          RewriteCond %{HTTPS} off
+
+          echo "================================================"
+
+          RewriteCond %{REQUEST_FILENAME} !-d          RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+      - name: 🔔 Notify on Failure
+
+        if: failure()          RewriteRule ^backend/api\.php/(.*)$ backend/api.php [L,QSA]
+
+        run: |
+
+          echo "================================================"          Options -Indexes          # Handle frontend routing
+
+          echo "❌ DEPLOYMENT FAILED!"
+
+          echo "================================================"          <FilesMatch "\.(sql|md|json|lock|log|ini)$">          RewriteCond %{REQUEST_FILENAME} !-f
+
+          echo "Please check the logs above for errors."
+
+          echo "Common issues:"              Order allow,deny          RewriteCond %{REQUEST_FILENAME} !-d
+
+          echo "  - FTP credentials incorrect"
+
+          echo "  - Server connection timeout"              Deny from all          RewriteCond %{REQUEST_URI} !^/backend/
+
+          echo "  - Insufficient permissions"
+
+          echo "  - Network issues"          </FilesMatch>          RewriteRule ^(.*)$ index.html [L,QSA]
+
+          echo "================================================"
 
           EOF
 
