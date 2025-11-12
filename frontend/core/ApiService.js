@@ -20,7 +20,12 @@ export class ApiService {
    */
   async get(endpoint, params = {}) {
     try {
-      const url = new URL(`${this.baseUrl}${endpoint}`);
+      // Build URL properly - handle both absolute and relative baseUrl
+      const fullUrl = this.baseUrl.startsWith('http') 
+        ? `${this.baseUrl}${endpoint}`
+        : `${window.location.origin}${this.baseUrl}${endpoint}`;
+      
+      const url = new URL(fullUrl);
       Object.keys(params).forEach((key) =>
         url.searchParams.append(key, params[key])
       );
@@ -112,13 +117,26 @@ export class ApiService {
     if (!contentType || !contentType.includes("application/json")) {
       const text = await response.text();
       console.error("API returned non-JSON response:", text);
-      throw new Error("Server error: Expected JSON but received HTML. Check backend logs.");
+      throw new Error("Server error: Expected JSON but received HTML/text. Check backend logs.");
     }
 
-    const data = await response.json();
+    // Check if response body is empty
+    const text = await response.text();
+    if (!text || text.trim() === '') {
+      console.error("API returned empty response. Status:", response.status);
+      throw new Error(`Server error: Empty response (HTTP ${response.status})`);
+    }
+
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      console.error("Failed to parse JSON:", text);
+      throw new Error("Server error: Invalid JSON response");
+    }
 
     if (!response.ok) {
-      throw new Error(data.message || "API request failed");
+      throw new Error(data.message || `API request failed (HTTP ${response.status})`);
     }
 
     return data;
