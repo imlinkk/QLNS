@@ -10,9 +10,32 @@ export class ApiService {
       window.location.hostname === "localhost" ||
       window.location.hostname === "127.0.0.1";
 
+    // Localhost uses PATH_INFO style (/api.php/endpoint)
+    // Production uses query string style (/api.php?route=endpoint) for better shared hosting compatibility
     this.baseUrl = isLocalhost
       ? "http://localhost/QLNS/backend/api.php"
       : "/backend/api.php";
+    
+    this.isLocalhost = isLocalhost;
+  }
+
+  /**
+   * Build full URL with endpoint
+   * Localhost: /api.php/endpoint
+   * Production: /api.php?route=endpoint
+   */
+  buildUrl(endpoint) {
+    if (this.isLocalhost) {
+      // Use PATH_INFO style for localhost
+      const fullUrl = this.baseUrl.startsWith('http') 
+        ? `${this.baseUrl}${endpoint}`
+        : `${window.location.origin}${this.baseUrl}${endpoint}`;
+      return fullUrl;
+    } else {
+      // Use query string for production (better shared hosting support)
+      const route = endpoint.replace(/^\//, ''); // Remove leading slash
+      return `${window.location.origin}${this.baseUrl}?route=${route}`;
+    }
   }
 
   /**
@@ -20,12 +43,7 @@ export class ApiService {
    */
   async get(endpoint, params = {}) {
     try {
-      // Build URL properly - handle both absolute and relative baseUrl
-      const fullUrl = this.baseUrl.startsWith('http') 
-        ? `${this.baseUrl}${endpoint}`
-        : `${window.location.origin}${this.baseUrl}${endpoint}`;
-      
-      const url = new URL(fullUrl);
+      const url = new URL(this.buildUrl(endpoint));
       Object.keys(params).forEach((key) =>
         url.searchParams.append(key, params[key])
       );
@@ -50,7 +68,7 @@ export class ApiService {
    */
   async post(endpoint, data = {}) {
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      const response = await fetch(this.buildUrl(endpoint), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +89,7 @@ export class ApiService {
    */
   async put(endpoint, data = {}) {
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      const response = await fetch(this.buildUrl(endpoint), {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +110,7 @@ export class ApiService {
    */
   async delete(endpoint) {
     try {
-      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      const response = await fetch(this.buildUrl(endpoint), {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

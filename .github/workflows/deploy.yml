@@ -3,9 +3,7 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - main
-      - develop
-      - fixByAlex
+      - main # Chỉ deploy khi push vào main
   workflow_dispatch:
 
 jobs:
@@ -21,7 +19,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: "7.4"
           extensions: pdo, pdo_mysql, mbstring
           coverage: none
 
@@ -45,31 +43,47 @@ jobs:
       - name: Prepare Files
         run: |
           mkdir deploy
-          cp -r backend deploy/
-          cp -r frontend deploy/
-          cp -r assets deploy/
-          cp index.html deploy/
-          
+
+          # Copy EVERYTHING except .git and .github
+          rsync -av --exclude='.git' --exclude='.github' --exclude='deploy' ./ deploy/
+
+          # Create/update root .htaccess for the entire site
           cat > deploy/.htaccess << 'EOF'
+          # Force HTTPS
           RewriteEngine On
           RewriteCond %{HTTPS} off
           RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+          # SPA routing - redirect all non-file/non-dir requests to index.html
           RewriteCond %{REQUEST_FILENAME} !-f
           RewriteCond %{REQUEST_FILENAME} !-d
           RewriteCond %{REQUEST_URI} !^/backend/
           RewriteRule ^(.*)$ index.html [L,QSA]
-          RewriteCond %{REQUEST_FILENAME} !-f
-          RewriteCond %{REQUEST_FILENAME} !-d
-          RewriteRule ^backend/api\.php/(.*)$ backend/api.php [L,QSA]
+
+          # Disable directory listing
           Options -Indexes
-          <FilesMatch "\.(sql|md|json|lock|log|ini)$">
-              Order allow,deny
-              Deny from all
+
+          # Prevent access to sensitive files
+          <FilesMatch "\.(sql|md|lock|log|ini|git|gitignore)$">
+              Require all denied
           </FilesMatch>
           EOF
-          
-          rm -rf deploy/tests deploy/docs deploy/.git deploy/.github
-          echo "Files ready for deployment"
+
+          echo "✅ Root .htaccess created"
+
+          # Remove unnecessary folders and files
+          echo "🗑️  Removing development/docs folders..."
+          rm -rf deploy/tests
+          rm -rf deploy/docs
+          rm -rf deploy/CICDHow
+          rm -rf deploy/setup
+          rm -rf deploy/archive
+          rm -rf deploy/.git
+          rm -rf deploy/.github
+          rm -f deploy/.gitignore
+          rm -f deploy/README.md
+
+          echo "✅ All files prepared for deployment"
 
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
@@ -82,6 +96,13 @@ jobs:
           local-dir: ./deploy/
           server-dir: ./
           dangerous-clean-slate: false
+          state-name: .ftp-deploy-sync-state.json
+          # Các file này sẽ bị xóa trên server nếu không có trong local
+          # FTP-Deploy-Action sẽ tự động:
+          # - Upload file mới
+          # - Cập nhật file đã sửa
+          # - Xóa file đã bị xóa ở local (dựa vào state file)
+          dry-run: false
 
       - name: Deployment Success
         if: success()
