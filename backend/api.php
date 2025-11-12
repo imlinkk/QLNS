@@ -36,38 +36,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Autoloader for classes
-spl_autoload_register(function ($class) {
-    $prefix = 'App\\';
-    $baseDir = __DIR__ . '/';
-
-    $len = strlen($prefix);
-    if (strncmp($prefix, $class, $len) !== 0) {
-        return;
-    }
-
-    $relativeClass = substr($class, $len);
-    $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
-
-    if (file_exists($file)) {
-        require $file;
-    } else {
-        // Log detailed error
-        $errorMsg = "Autoloader: File not found - $file for class $class";
-        error_log($errorMsg);
-        
-        // In case of critical error, output JSON error
-        if (!headers_sent()) {
-            http_response_code(500);
-            echo json_encode([
-                'success' => false,
-                'message' => 'Server configuration error',
-                'error' => 'Required class not found: ' . $class
-            ]);
-            exit;
-        }
-    }
-});
+// Load autoloader
+require_once __DIR__ . '/autoload.php';
 
 // Import core classes
 use App\Core\Request;
@@ -81,14 +51,14 @@ try {
 
     // Load route files
     $routeFiles = [
-        __DIR__ . '/routes/auth.php',
-        __DIR__ . '/routes/employees.php',
-        __DIR__ . '/routes/departments.php',
-        __DIR__ . '/routes/positions.php',
-        __DIR__ . '/routes/salaries.php',
-        __DIR__ . '/routes/attendance.php',
-        __DIR__ . '/routes/leaves.php',
-        __DIR__ . '/routes/performance.php',
+        __DIR__ . '/Routes/auth.php',
+        __DIR__ . '/Routes/employees.php',
+        __DIR__ . '/Routes/departments.php',
+        __DIR__ . '/Routes/positions.php',
+        __DIR__ . '/Routes/salaries.php',
+        __DIR__ . '/Routes/attendance.php',
+        __DIR__ . '/Routes/leaves.php',
+        __DIR__ . '/Routes/performance.php',
     ];
 
     foreach ($routeFiles as $file) {
