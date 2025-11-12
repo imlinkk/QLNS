@@ -14,7 +14,7 @@ private const DB_CHARSET = 'utf8mb4';
 // private const DB_HOST = 'localhost';
 // private const DB_NAME = 'linh_hrm';     // ← TÊN DATABASE
 // private const DB_USER = 'root';   // ← TÊN USER
-// private const DB_PASS = 'quan2004';            // ← MẬT KHẨU BẠN ĐÃ ĐẶT
+// private const DB_PASS = '';            // ← MẬT KHẨU BẠN ĐÃ ĐẶT
 // private const DB_CHARSET = 'utf8mb4';
     // PDO instance (singleton pattern)
     private static ?PDO $instance = null;
