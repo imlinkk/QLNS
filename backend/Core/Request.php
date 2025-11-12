@@ -39,12 +39,17 @@ class Request
      */
     private function getPath(): string
     {
-        // Try to get path from PATH_INFO first (for /api.php/auth/check style URLs)
+        // Priority 1: Check for ?route= query parameter (for shared hosting compatibility)
+        if (isset($_GET['route']) && $_GET['route'] !== '') {
+            return '/' . ltrim($_GET['route'], '/');
+        }
+
+        // Priority 2: Try to get path from PATH_INFO (for /api.php/auth/check style URLs)
         if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] !== '') {
             return $_SERVER['PATH_INFO'];
         }
 
-        // Fallback to parsing REQUEST_URI
+        // Priority 3: Fallback to parsing REQUEST_URI
         $uri = $_SERVER['REQUEST_URI'];
         $path = parse_url($uri, PHP_URL_PATH);
 

@@ -1,15 +1,17 @@
-RewriteEngine On
-
-# Enable AcceptPathInfo for api.php
+# Enable PATH_INFO for routing
 AcceptPathInfo On
 
-# Enable rewrite for API routing
+# Enable mod_rewrite
+RewriteEngine On
+RewriteBase /backend/
+
+# Handle api.php/endpoint routing
+# If request is for api.php/something, pass it through with PATH_INFO
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^api\.php/(.*)$ api.php [L,QSA]
+RewriteRule ^api\.php/(.*)$ api.php/$1 [L,QSA]
 
-# Prevent access to sensitive files
-<FilesMatch "\.(sql|md|json|lock|log)$">
-    Order allow,deny
-    Deny from all
+# Prevent direct access to sensitive files
+<FilesMatch "\.(sql|md|json|lock|log|ini)$">
+    Require all denied
 </FilesMatch>
