@@ -45,17 +45,11 @@ jobs:
       - name: Prepare Files
         run: |
           mkdir deploy
-          # Copy all main directories
-          cp -r backend deploy/
-          cp -r frontend deploy/
-          cp -r assets deploy/ 2>/dev/null || echo "No assets folder"
           
-          # Copy all root files
-          cp index.html deploy/
-          cp index.php deploy/ 2>/dev/null || echo "No index.php"
-          cp check_production.php deploy/ 2>/dev/null || echo "No check_production.php"
+          # Copy EVERYTHING except .git and .github
+          rsync -av --exclude='.git' --exclude='.github' --exclude='deploy' ./ deploy/
           
-          # Create root .htaccess for the entire site
+          # Create/update root .htaccess for the entire site
           cat > deploy/.htaccess << 'EOF'
           # Force HTTPS
           RewriteEngine On
@@ -72,12 +66,12 @@ jobs:
           Options -Indexes
           
           # Prevent access to sensitive files
-          <FilesMatch "\.(sql|md|json|lock|log|ini|git|gitignore)$">
+          <FilesMatch "\.(sql|md|lock|log|ini|git|gitignore)$">
               Require all denied
           </FilesMatch>
           EOF
           
-          # Clean up development files
+          echo "✅ All project files prepared for deployment"
           rm -rf deploy/tests deploy/docs deploy/.git deploy/.github deploy/archive
           echo "✅ All files prepared for deployment"
 
