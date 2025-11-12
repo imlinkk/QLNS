@@ -1,6 +1,11 @@
 <?php
+// Error handling: Log errors but don't display them (to avoid breaking JSON responses)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);  // Don't display errors in response
+ini_set('log_errors', 1);       // Log errors to PHP error log
+
+// Set JSON content type early
+header('Content-Type: application/json; charset=utf-8');
 
 // Auto-detect environment and set appropriate CORS
 $isLocalhost = in_array($_SERVER['HTTP_HOST'] ?? '', ['localhost', '127.0.0.1', 'localhost:80']);
@@ -46,6 +51,8 @@ spl_autoload_register(function ($class) {
 
     if (file_exists($file)) {
         require $file;
+    } else {
+        error_log("Autoloader: File not found - $file for class $class");
     }
 });
 
