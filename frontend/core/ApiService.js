@@ -106,6 +106,15 @@ export class ApiService {
    * Handle API response
    */
   async handleResponse(response) {
+    const contentType = response.headers.get("content-type");
+    
+    // Check if response is JSON
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await response.text();
+      console.error("API returned non-JSON response:", text);
+      throw new Error("Server error: Expected JSON but received HTML. Check backend logs.");
+    }
+
     const data = await response.json();
 
     if (!response.ok) {
