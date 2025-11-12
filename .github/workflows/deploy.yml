@@ -79,7 +79,7 @@ jobs:
           protocol: ftp
           port: 21
           local-dir: ./deploy/
-          server-dir: /home/cdmidkxg/domains/hrm.imlink.id.vn/public_html/
+          server-dir: ./
           dangerous-clean-slate: false
 
       - name: Deployment Success
