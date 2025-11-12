@@ -52,7 +52,20 @@ spl_autoload_register(function ($class) {
     if (file_exists($file)) {
         require $file;
     } else {
-        error_log("Autoloader: File not found - $file for class $class");
+        // Log detailed error
+        $errorMsg = "Autoloader: File not found - $file for class $class";
+        error_log($errorMsg);
+        
+        // In case of critical error, output JSON error
+        if (!headers_sent()) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Server configuration error',
+                'error' => 'Required class not found: ' . $class
+            ]);
+            exit;
+        }
     }
 });
 
