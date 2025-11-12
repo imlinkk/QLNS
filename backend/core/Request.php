@@ -39,12 +39,18 @@ class Request
      */
     private function getPath(): string
     {
+        // Try to get path from PATH_INFO first (for /api.php/auth/check style URLs)
+        if (isset($_SERVER['PATH_INFO']) && $_SERVER['PATH_INFO'] !== '') {
+            return $_SERVER['PATH_INFO'];
+        }
+
+        // Fallback to parsing REQUEST_URI
         $uri = $_SERVER['REQUEST_URI'];
         $path = parse_url($uri, PHP_URL_PATH);
 
         // Remove common base paths
         $basePaths = [
-            '/HRmOfLink/backend',  // For localhost/HRmOfLink/backend/api.php
+            '/QLNS/backend',       // For localhost/QLNS/backend/api.php
             '/backend',            // For /backend/api.php
         ];
 

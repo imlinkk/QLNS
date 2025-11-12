@@ -11,7 +11,7 @@ export class ApiService {
       window.location.hostname === "127.0.0.1";
 
     this.baseUrl = isLocalhost
-      ? "http://localhost/HRmOfLink/backend/api.php"
+      ? "http://localhost/QLNS/backend/api.php"
       : "/backend/api.php";
   }
 
