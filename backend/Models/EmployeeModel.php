@@ -119,6 +119,7 @@ class EmployeeModel extends BaseModel {
                 $params['departmentId'] = $criteria['departmentId'];
             }
             
+
             // Position filter
             if (!empty($criteria['positionId'])) {
                 $sql .= " AND e.position_id = :positionId";
@@ -143,7 +144,7 @@ class EmployeeModel extends BaseModel {
             }
             
             $sql .= " ORDER BY e.salary DESC";
-            
+           
             return $this->query($sql, $params);
             
         } catch (PDOException $e) {
